@@ -32,7 +32,10 @@ class Puzzle:
     # The parameters are confusing because they call difficulty level
     # and level is called set_id
     def getUrl(self):
-        return 'http://www.websudoku.com/?' \
+        # The main website uses iframe to embed the actual game
+        # Main url is http://websudoku.com
+        # but the iframe pulls from http://show.websudoku.com
+        return 'http://show.websudoku.com/?' \
             + 'level=' + str(self.difficulty) \
             + '&set_id=' + str(self.level)
 
