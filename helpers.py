@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.action_chains import ActionChains
 import os
 
 
@@ -19,7 +16,8 @@ def getChromeDriver():
     return webdriver.Chrome(chromedriver, chrome_options=chrome_options)
 
 
-def setValue(browser, cellId, val):
-    cell = browser.find_element_by_id(cellId)
-    # TODO: test to see if send number key works
-    ActionChains(browser).click(cell).send_keys(val).perform()
+def setValue(browser, i, j, val):
+    # Websudoku has reversed row and col index
+    cellId = 'c' + str(j) + str(i)
+    cell = browser.find_element_by_id(cellId).find_element_by_tag_name('input')
+    browser.execute_script("arguments[0].value = arguments[1]", cell, val)

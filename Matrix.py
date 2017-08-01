@@ -1,15 +1,12 @@
-#!/usr/bin/env python3
-
 import helpers
 import itertools
 
 
 class Matrix:
 
-    def __init__(self, browser, size, gridId='puzzle_grid'):
+    def __init__(self, browser, size):
         self.browser = browser
         self.size = size
-        self.gridId = gridId
         self.vectorTypes = ('row', 'col')
         self.totalCount = 0
         # self.count = {}
@@ -32,17 +29,20 @@ class Matrix:
 
         self.load()
         self.print()
+        helpers.setValue(self.browser, 0, 0, 3)
+        helpers.setValue(self.browser, 0, 1, 4)
         # self.countRowsAndCols()
         # self.updateCompleteness()
 
     # Load matrix from game
     def load(self):
-        grid = self.browser.find_element_by_id(self.gridId)
+        xpath = './/table[@id="puzzle_grid"]//input'
+        cells = self.browser.find_elements_by_xpath(xpath)
         self.values = []
         for i in range(self.size):
             row = []
             for j in range(self.size):
-                stringValue = cells[i*self.size+j].text
+                stringValue = cells[i*self.size+j].get_attribute('value')
                 intValue = int(stringValue) if stringValue.strip() else None
                 row.append(intValue)
             self.values.append(row)
