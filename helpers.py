@@ -17,3 +17,9 @@ def getChromeDriver():
     chrome_options.add_argument("--disable-user-media-security=true")
     chrome_options.add_argument("--use-fake-ui-for-media-stream")
     return webdriver.Chrome(chromedriver, chrome_options=chrome_options)
+
+
+def setValue(browser, cellId, val):
+    cell = browser.find_element_by_id(cellId)
+    # TODO: test to see if send number key works
+    ActionChains(browser).click(cell).send_keys(val).perform()
