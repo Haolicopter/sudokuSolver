@@ -8,4 +8,4 @@ puzzle.set(
     Puzzle.DIFFICULTY['easy'],
     27
 )
-# puzzle.play()
+puzzle.play()
