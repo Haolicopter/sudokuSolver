@@ -118,5 +118,7 @@ class Matrix:
             return (i, j)
         elif vectorType == 'col':
             return (j, i)
+        elif vectorType == 'square':
+            raise Exception('Unhandled vector type!')
         else:
             raise Exception('Unknown vector type!')

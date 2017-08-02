@@ -1,5 +1,6 @@
 import helpers
 import os
+import sys
 import random
 from Matrix import Matrix
 
@@ -49,6 +50,7 @@ class Puzzle:
         while not self.matrix.isComplete():
             for v in self.matrix.vectorTypes:
                 self.completeVector(v)
+            # sys.exit(1)
 
         self.matrix.print()
 
@@ -57,17 +59,17 @@ class Puzzle:
     def completeVector(self, v):
         squares = self.matrix.getSquares()
         for i in range(self.size):
-            print('Checking ' + v + str(i) + '...')
+            # print('Checking ' + v + str(i) + '...')
             numbers = []
             if v == 'row' or v == 'col':
                 for j in range(self.size):
                     numbers.append(self.matrix.getRowAndColIndexes(v, i, j))
             elif v == 'square':
                 numbers = squares[i]
-            self.completeSpace(numbers)
+            self.setMissingCell(numbers)
 
     # Complete numbers in a given space (row, col, or square)
-    def completeSpace(self, numbers):
+    def setMissingCell(self, numbers):
         if len(numbers) != self.size:
             raise Exception('Number out of range!')
 
@@ -77,9 +79,13 @@ class Puzzle:
             if val is not None:
                 missingNumbers.remove(val)
             else:
-                missNumRow = row
-                missNumCol = col
+                missingNumRow = row
+                missingNumCol = col
         # Current vector/square only misses one number
         if len(missingNumbers) == 1:
             self.matrix.setCell(
-                missNumRow, missNumCol, missingNumbers[0])
+                missingNumRow, missingNumCol, missingNumbers[0])
+        # else:
+        #     print('Missing numbers are:')
+        #     print(missingNumbers)
+        #     print()
