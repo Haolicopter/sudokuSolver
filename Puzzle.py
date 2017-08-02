@@ -1,7 +1,6 @@
 import helpers
-import sys
+import os
 import random
-import math
 from Matrix import Matrix
 
 
@@ -49,50 +48,23 @@ class Puzzle:
     def play(self):
         while not self.matrix.isComplete():
             for v in self.matrix.vectorTypes:
-                for i in range(self.size):
-                    self.completeVector(v, i)
-            for square in self.getSquares():
-                self.completeSquare(square)
-            # TODO: remove exit and implement guess combo function
-            sys.exit(1)
-
-        if self.matrix.isCorrect():
-            print('Yay! We did it!')
-        else:
-            print('Crap the solution is incorrect!')
+                self.completeVector(v)
 
         self.matrix.print()
 
-    # Divide the grid into squares
-    def getSquares(self):
-        squareSize = int(math.sqrt(self.size))
-        squares = []
-        for i in range(squareSize):
-            for j in range(squareSize):
-                square = []
-                for a in range(squareSize):
-                    for b in range(squareSize):
-                        square.append(
-                            (i*squareSize + a, j*squareSize + b)
-                        )
-                squares.append(square)
-        return squares
-
-    # Complete row and column:
-    # Each row and each column should contain all the numbers 1 to self.size
-    def completeVector(self, v, i):
-        print('Checking ' + v + str(i) + '...')
-        numbers = []
-        for j in range(self.size):
-            numbers.append(self.matrix.getRowAndColIndexes(v, i, j))
-        self.completeSpace(numbers)
-
-    # Complete square:
-    # Each square should contain all the numbers 1 to self.size
-    def completeSquare(self, square):
-        (row, col) = square[0]
-        print('Checking square with top left at (' + str(row) + ', ' + str(col) + ')')
-        self.completeSpace(square)
+    # Complete row, column and square:
+    # Each row, column and square should contain all the numbers 1 to self.size
+    def completeVector(self, v):
+        squares = self.matrix.getSquares()
+        for i in range(self.size):
+            print('Checking ' + v + str(i) + '...')
+            numbers = []
+            if v == 'row' or v == 'col':
+                for j in range(self.size):
+                    numbers.append(self.matrix.getRowAndColIndexes(v, i, j))
+            elif v == 'square':
+                numbers = squares[i]
+            self.completeSpace(numbers)
 
     # Complete numbers in a given space (row, col, or square)
     def completeSpace(self, numbers):
@@ -103,7 +75,6 @@ class Puzzle:
         for (row, col) in numbers:
             val = self.matrix.values[row][col]
             if val is not None:
-                print('We already have ' + str(val))
                 missingNumbers.remove(val)
             else:
                 missNumRow = row
@@ -112,6 +83,3 @@ class Puzzle:
         if len(missingNumbers) == 1:
             self.matrix.setCell(
                 missNumRow, missNumCol, missingNumbers[0])
-        else:
-            print('Too many missing numbers..')
-            print(missingNumbers)
