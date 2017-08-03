@@ -192,7 +192,7 @@ class Matrix:
             for (row, col) in fullVector:
                 # Load from combo
                 if self.values[row][col] is None:
-                    val = combo[count]
+                    val = int(combo[count])
                     count += 1
                     isGuess = True
                 # Load from current cell
