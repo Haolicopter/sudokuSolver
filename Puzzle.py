@@ -50,7 +50,7 @@ class Puzzle:
         while not self.matrix.isComplete():
             for v in self.matrix.vectorTypes:
                 self.completeVector(v)
-            # sys.exit(1)
+            self.solveIncompleteVectors()
 
         self.matrix.print()
 
@@ -85,7 +85,60 @@ class Puzzle:
         if len(missingNumbers) == 1:
             self.matrix.setCell(
                 missingNumRow, missingNumCol, missingNumbers[0])
-        # else:
-        #     print('Missing numbers are:')
-        #     print(missingNumbers)
-        #     print()
+
+    # Try solving incomplete rows/cols/square
+    def solveIncompleteVectors(self):
+        if len(self.matrix.incompleteVectors) == 0:
+            return
+        for (vectorType, i, missingCount) in self.matrix.incompleteVectors:
+            self.eliminateImpossibleCombinations(vectorType, i, missingCount)
+
+    # Eliminate impossible combinations
+    def eliminateImpossibleCombinations(self, vectorType, i, missingCount):
+        # Lay out all the possible combinations
+        candidates = self.matrix.getCandidates(vectorType, i)
+
+        candidatesCount = len(candidates)
+        hasMessage = False
+        message = 'Using eliminateImpossibleCombinations method at ' + \
+            vectorType + ' ' + str(i) + ' with ' + str(missingCount) + \
+            ' missing cells, we nailed down to ' + str(candidatesCount) + \
+            ' possible combo(s)' + os.linesep
+
+        for candidate in candidates:
+            line = ''
+            for x in range(len(candidate)):
+                line += str(candidate[x]['val']) + ', '
+            message += line[:-2] + os.linesep
+
+        if candidatesCount == 1:
+            message += 'Since this is the only possible combination. ' + \
+                'We solved entire ' + vectorType + ' ' + str(i) + os.linesep
+            for cell in candidates[0]:
+                if cell['isGuess']:
+                    hasMessage = True
+                    message += 'Setting cell (' + str(cell['row']) + ', ' + \
+                        str(cell['col']) + ') to ' + str(cell['val']) + \
+                        os.linesep
+                    self.matrix.setCell(cell['row'], cell['col'], cell['val'])
+        elif candidatesCount > 1:
+            message += 'Finding missing cells that all combos agree on' + \
+                os.linesep
+            for x in range(len(candidates[0])):
+                cell = candidates[0][x]
+                if cell['isGuess'] is False:
+                    continue
+                isCommon = True
+                for i in range(1, candidatesCount):
+                    if cell['val'] != candidates[i][x]['val']:
+                        isCommon = False
+                        break
+                if isCommon:
+                    hasMessage = True
+                    message += 'Setting cell (' + str(cell['row']) + ', ' + \
+                        str(cell['col']) + ') to ' + str(cell['val']) + \
+                        os.linesep
+                    self.matrix.setCell(cell['row'], cell['col'], cell['val'])
+
+        if hasMessage:
+            print(message.rstrip())
