@@ -89,9 +89,9 @@ class Puzzle:
     # Try solving incomplete rows/cols/square
     def solveIncompleteVectors(self):
         if len(self.matrix.incompleteVectors) == 0:
+            print('No incomplete vectors to solve')
             return
-        for (vectorType, i, missingCount) in self.matrix.incompleteVectors:
-            self.eliminateImpossibleCombinations(vectorType, i, missingCount)
+        self.eliminateImpossibleCombinations(self.matrix.incompleteVectors[0])
 
     # Eliminate impossible combinations
     def eliminateImpossibleCombinations(self, vectorType, i, missingCount):
@@ -99,6 +99,10 @@ class Puzzle:
         candidates = self.matrix.getCandidates(vectorType, i)
 
         candidatesCount = len(candidates)
+        if candidatesCount == 0:
+            print(vectorType + ' ' + str(i) + ' have zero valid candidate.')
+            return
+
         hasMessage = False
         message = 'Using eliminateImpossibleCombinations method at ' + \
             vectorType + ' ' + str(i) + ' with ' + str(missingCount) + \
