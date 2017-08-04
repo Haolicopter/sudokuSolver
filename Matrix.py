@@ -40,18 +40,23 @@ class Matrix:
                     self.updateCount(i, j, intValue)
             self.values.append(row)
 
-        for v in self.vectorTypes:
-            self.updateVectorCompleteness(v, i)
-
     def updateCount(self, i, j, val):
         self.totalCount += 1
-        self.count['row'][i].append((i, j, val))
-        self.count['col'][j].append((i, j, val))
-        squareIndex = int(i/self.squareSize)*self.squareSize + \
-            int(j/self.squareSize)
-        self.count['square'][squareIndex].append((i, j, val))
         for v in self.vectorTypes:
-            self.updateVectorCompleteness(v, i)
+            vectorIndex = self.getVectorIndex(v, i, j)
+            self.count[v][vectorIndex].append((i, j, val))
+            self.updateVectorCompleteness(v, vectorIndex)
+
+    def getVectorIndex(self, v, i, j):
+        if v == 'row':
+            return i
+        elif v == 'col':
+            return j
+        elif v == 'square':
+            return int(i/self.squareSize)*self.squareSize + \
+                int(j/self.squareSize)
+        else:
+            raise Exception('Unknown vector type!')
 
     # Check for complete and near complete for current row/col/square
     def updateVectorCompleteness(self, vectorType, i):
@@ -90,6 +95,9 @@ class Matrix:
             for j in range(self.size):
                 row.append(self.values[i][j])
             print(row)
+        print('No. of incomplete vectors ' + str(len(self.incompleteVectors)))
+        # for (vectorType, i, vectorMissingCells) in self.incompleteVectors:
+        #     print(vectorType + str(i) + ' has ' + str(vectorMissingCells) + ' missing cells')
 
     # Divide matrix into squares
     def getSquares(self):

@@ -51,6 +51,7 @@ class Puzzle:
             for v in self.matrix.vectorTypes:
                 self.completeVector(v)
             self.solveIncompleteVectors()
+            sys.exit(1)
 
         self.matrix.print()
 
@@ -59,13 +60,15 @@ class Puzzle:
     def completeVector(self, v):
         squares = self.matrix.getSquares()
         for i in range(self.size):
-            # print('Checking ' + v + str(i) + '...')
+            print('Checking ' + v + str(i) + '...')
             numbers = []
             if v == 'row' or v == 'col':
                 for j in range(self.size):
                     numbers.append(self.matrix.getRowAndColIndexes(v, i, j))
             elif v == 'square':
                 numbers = squares[i]
+            else:
+                raise Exception('Unknown vector type!')
             self.setMissingCell(numbers)
 
     # Complete numbers in a given space (row, col, or square)
@@ -94,7 +97,8 @@ class Puzzle:
         self.eliminateImpossibleCombinations(self.matrix.incompleteVectors[0])
 
     # Eliminate impossible combinations
-    def eliminateImpossibleCombinations(self, vectorType, i, missingCount):
+    def eliminateImpossibleCombinations(self, incompleteVector):
+        (vectorType, i, missingCount) = incompleteVector
         # Lay out all the possible combinations
         candidates = self.matrix.getCandidates(vectorType, i)
 
