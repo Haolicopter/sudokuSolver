@@ -51,7 +51,6 @@ class Puzzle:
             for v in self.matrix.vectorTypes:
                 self.completeVector(v)
             self.solveIncompleteVectors()
-            sys.exit(1)
 
         self.matrix.print()
 
@@ -76,7 +75,7 @@ class Puzzle:
         if len(numbers) != self.size:
             raise Exception('Number out of range!')
 
-        missingNumbers = list(range(1, self.size+1))
+        missingNumbers = list(range(1, self.size + 1))
         for (row, col) in numbers:
             val = self.matrix.values[row][col]
             if val is not None:

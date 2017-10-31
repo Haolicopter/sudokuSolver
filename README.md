@@ -4,9 +4,9 @@ Sudoku Solver is my attempt to build a bot to play [Sodoku](http://www.websudoku
 
 ## Environment
 
-Language: `Python 3.6.1`
+Language: `Python 3.6.3`
 
-Testing OS: `Mac OSX Sierra`
+Env: `Mac OSX High Sierra`
 
 <!-- ## Demo (Diffculty: Very Hard, Size: 14*14)
 <p>
