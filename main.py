@@ -5,7 +5,6 @@ from Puzzle import Puzzle
 
 puzzle = Puzzle()
 puzzle.set(
-    Puzzle.DIFFICULTY['easy'],
-    27
+    Puzzle.DIFFICULTY['evil']
 )
 puzzle.play()

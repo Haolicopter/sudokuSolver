@@ -78,7 +78,6 @@ class Puzzle:
                 print('No possible value for cell (' +
                       str(next_i) + ', ' + str(next_j) + '), let\'s traceback.')
                 self.board.unsetCell(i, j)
-                print('Stack atm: ', stack)
             # This candidate value looks good
             else:
                 print('Adding all possible values for cell (' + str(next_i) + ', ' +
