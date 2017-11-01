@@ -33,7 +33,7 @@ class Matrix:
         for i in range(self.size):
             row = []
             for j in range(self.size):
-                stringValue = cells[i*self.size+j].get_attribute('value')
+                stringValue = cells[i * self.size + j].get_attribute('value')
                 intValue = int(stringValue) if stringValue.strip() else None
                 row.append(intValue)
                 if intValue is not None:
@@ -53,8 +53,8 @@ class Matrix:
         elif v == 'col':
             return j
         elif v == 'square':
-            return int(i/self.squareSize)*self.squareSize + \
-                int(j/self.squareSize)
+            return int(i / self.squareSize) * self.squareSize + \
+                int(j / self.squareSize)
         else:
             raise Exception('Unknown vector type!')
 
@@ -108,7 +108,7 @@ class Matrix:
                 for a in range(self.squareSize):
                     for b in range(self.squareSize):
                         square.append(
-                            (i*self.squareSize + a, j*self.squareSize + b)
+                            (i * self.squareSize + a, j * self.squareSize + b)
                         )
                 squares.append(square)
         return squares
@@ -160,7 +160,7 @@ class Matrix:
         elif vectorType == 'col':
             return (j, i)
         elif vectorType == 'square':
-            raise Exception('Unhandled vector type!')
+            raise Exception('Unhanded vector type!')
         else:
             raise Exception('Unknown vector type!')
 
@@ -177,7 +177,7 @@ class Matrix:
         return fullVector
 
     def getMissingNumbers(self, vectorType, i):
-        missingNumbers = list(range(1, self.size+1))
+        missingNumbers = list(range(1, self.size + 1))
         for (row, col, val) in self.count[vectorType][i]:
             if val is not None:
                 missingNumbers.remove(val)
