@@ -2,7 +2,7 @@ import helpers
 import os
 import sys
 import random
-from Matrix import Matrix
+from Board import Board
 
 
 class Puzzle:
@@ -26,8 +26,8 @@ class Puzzle:
         self.showConfig()
         # Load game into browser
         self.browser.get(self.getUrl())
-        # Load matrix from game
-        self.matrix = Matrix(self.browser, self.size)
+        # Load board
+        self.board = Board(self.browser, self.size)
 
     # Construct puzzle URL
     # The parameters are confusing because they call difficulty level
@@ -47,105 +47,45 @@ class Puzzle:
 
     # Let's play!
     def play(self):
-        while not self.matrix.isComplete():
-            for v in self.matrix.vectorTypes:
-                self.completeVector(v)
-            self.solveIncompleteVectors()
+        stack = []
 
-        self.matrix.print()
+        (i, j) = self.board.emptyCells.popleft()
+        possibleValues = self.board.getCellPossibleValues(i, j)
+        print('Adding all possible values for cell (' + str(i) + ', ' +
+              str(j) + ') to stack: ' + ', '.join(map(str, possibleValues)))
+        for possibleValue in possibleValues:
+            stack.append((i, j, possibleValue))
 
-    # Complete row, column and square:
-    # Each row, column and square should contain all the numbers 1 to self.size
-    def completeVector(self, v):
-        squares = self.matrix.getSquares()
-        for i in range(self.size):
-            print('Checking ' + v + str(i) + '...')
-            numbers = []
-            if v == 'row' or v == 'col':
-                for j in range(self.size):
-                    numbers.append(self.matrix.getRowAndColIndexes(v, i, j))
-            elif v == 'square':
-                numbers = squares[i]
+        while len(stack) > 0:
+            # Pick a possible value
+            (i, j, val) = stack.pop()
+            print('Trying ' + str(val) +
+                  ' for cell (' + str(i) + ', ' + str(j) + ')')
+            self.board.setCell(i, j, val)
+
+            if len(self.board.emptyCells) == 0:
+                break
+
+            # Recount empty cell on back trace
+            self.board.recountEmptyCells(i, j)
+
+            (next_i, next_j) = self.board.emptyCells.popleft()
+            possibleValues = self.board.getCellPossibleValues(
+                next_i, next_j)
+            # This candidate value is invalid
+            if len(possibleValues) == 0:
+                # Unset current cell and move to the next possible value
+                print('No possible value for cell (' +
+                      str(next_i) + ', ' + str(next_j) + '), let\'s traceback.')
+                self.board.unsetCell(i, j)
+                print('Stack atm: ', stack)
+            # This candidate value looks good
             else:
-                raise Exception('Unknown vector type!')
-            self.setMissingCell(numbers)
+                print('Adding all possible values for cell (' + str(next_i) + ', ' +
+                      str(next_j) + ') to stack: ' + ', '.join(map(str, possibleValues)))
+                for possibleValue in possibleValues:
+                    stack.append((next_i, next_j, possibleValue))
 
-    # Complete numbers in a given space (row, col, or square)
-    def setMissingCell(self, numbers):
-        if len(numbers) != self.size:
-            raise Exception('Number out of range!')
-
-        missingNumbers = list(range(1, self.size + 1))
-        for (row, col) in numbers:
-            val = self.matrix.values[row][col]
-            if val is not None:
-                missingNumbers.remove(val)
-            else:
-                missingNumRow = row
-                missingNumCol = col
-        # Current vector/square only misses one number
-        if len(missingNumbers) == 1:
-            self.matrix.setCell(
-                missingNumRow, missingNumCol, missingNumbers[0])
-
-    # Try solving incomplete rows/cols/square
-    def solveIncompleteVectors(self):
-        if len(self.matrix.incompleteVectors) == 0:
-            print('No incomplete vectors to solve')
-            return
-        self.eliminateImpossibleCombinations(self.matrix.incompleteVectors[0])
-
-    # Eliminate impossible combinations
-    def eliminateImpossibleCombinations(self, incompleteVector):
-        (vectorType, i, missingCount) = incompleteVector
-        # Lay out all the possible combinations
-        candidates = self.matrix.getCandidates(vectorType, i)
-
-        candidatesCount = len(candidates)
-        if candidatesCount == 0:
-            print(vectorType + ' ' + str(i) + ' have zero valid candidate.')
-            return
-
-        hasMessage = False
-        message = 'Using eliminateImpossibleCombinations method at ' + \
-            vectorType + ' ' + str(i) + ' with ' + str(missingCount) + \
-            ' missing cells, we nailed down to ' + str(candidatesCount) + \
-            ' possible combo(s)' + os.linesep
-
-        for candidate in candidates:
-            line = ''
-            for x in range(len(candidate)):
-                line += str(candidate[x]['val']) + ', '
-            message += line[:-2] + os.linesep
-
-        if candidatesCount == 1:
-            message += 'Since this is the only possible combination. ' + \
-                'We solved entire ' + vectorType + ' ' + str(i) + os.linesep
-            for cell in candidates[0]:
-                if cell['isGuess']:
-                    hasMessage = True
-                    message += 'Setting cell (' + str(cell['row']) + ', ' + \
-                        str(cell['col']) + ') to ' + str(cell['val']) + \
-                        os.linesep
-                    self.matrix.setCell(cell['row'], cell['col'], cell['val'])
-        elif candidatesCount > 1:
-            message += 'Finding missing cells that all combos agree on' + \
-                os.linesep
-            for x in range(len(candidates[0])):
-                cell = candidates[0][x]
-                if cell['isGuess'] is False:
-                    continue
-                isCommon = True
-                for i in range(1, candidatesCount):
-                    if cell['val'] != candidates[i][x]['val']:
-                        isCommon = False
-                        break
-                if isCommon:
-                    hasMessage = True
-                    message += 'Setting cell (' + str(cell['row']) + ', ' + \
-                        str(cell['col']) + ') to ' + str(cell['val']) + \
-                        os.linesep
-                    self.matrix.setCell(cell['row'], cell['col'], cell['val'])
-
-        if hasMessage:
-            print(message.rstrip())
+        print('Done!')
+        self.board.print()
+        helpers.submit(self.browser)
