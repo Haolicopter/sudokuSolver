@@ -5,6 +5,6 @@ from Puzzle import Puzzle
 
 puzzle = Puzzle()
 puzzle.set(
-    Puzzle.DIFFICULTY['evil']
+    Puzzle.DIFFICULTY['medium']
 )
 puzzle.play()
