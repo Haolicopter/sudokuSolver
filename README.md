@@ -8,7 +8,7 @@ Language: `Python 3.6.3`
 
 Env: `Mac OSX High Sierra`
 
-<!-- ## Demo (Diffculty: Very Hard, Size: 14*14)
+## Demo (Diffculty: Easy)
 <p>
 	<img src="demo.gif" alt="demo"" style="width:100%;">
-</p> -->
+</p>
